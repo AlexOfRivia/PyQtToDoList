@@ -109,14 +109,53 @@ def delTask():
 deleteTaskButton.clicked.connect(delTask)
 addTaskButton.clicked.connect(addTask)
 
+
+
 bottomLayout = QHBoxLayout()
 
+sortButton = QPushButton("Sort tasks")
+sortButton.setStyleSheet("QPushButton { border-radius: 10px; max-height: 40px; " \
+                            "background-color: rgb(119,221,119); color: white; border: " \
+                            "none; padding: 5px 10px; } QPushButton:hover { background-color: rgb(105,198,105); } " \
+                            "QPushButton:pressed { background-color: rgb(90,175,90); }")
+
+loadButton = QPushButton("Load from file")
+loadButton.setStyleSheet("QPushButton { border-radius: 10px; max-height: 40px; " \
+                            "background-color: rgb(119,221,119); color: white; border: " \
+                            "none; padding: 5px 10px; } QPushButton:hover { background-color: rgb(105,198,105); } " \
+                            "QPushButton:pressed { background-color: rgb(90,175,90); }")
+
+saveButton = QPushButton("Save to file")
+saveButton.setStyleSheet("QPushButton { border-radius: 10px; max-height: 40px; " \
+                            "background-color: rgb(119,221,119); color: white; border: " \
+                            "none; padding: 5px 10px; } QPushButton:hover { background-color: rgb(105,198,105); } " \
+                            "QPushButton:pressed { background-color: rgb(90,175,90); }")
+
+
+def sortTaskList():
+    tasks = []
+    for i in range(taskListWidget.count()):
+        tasks.append(taskListWidget.item(i).text())
+
+    order = {low: 1, medium: 2, high: 3}
+    tasks.sort(key=lambda t: order[t.split(" - Priority: ")[1]])
+
+    taskListWidget.clear()
+    for task in tasks:
+        taskListWidget.addItem(task)
+sortButton.clicked.connect(sortTaskList)
+
+
+bottomLayout.addWidget(sortButton)
+bottomLayout.addWidget(loadButton)
+bottomLayout.addWidget(saveButton)
 
 topBarLayout.addWidget(deleteTaskButton)
 topBarLayout.addWidget(addTaskButton)
 
 mainlayout.addItem(topBarLayout)
 mainlayout.addWidget(taskListWidget)
+mainlayout.addItem(bottomLayout)
 
 win.setLayout(mainlayout)
 
