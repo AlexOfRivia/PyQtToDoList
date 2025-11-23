@@ -119,6 +119,12 @@ sortButton.setStyleSheet("QPushButton { border-radius: 10px; max-height: 40px; "
                             "none; padding: 5px 10px; } QPushButton:hover { background-color: rgb(105,198,105); } " \
                             "QPushButton:pressed { background-color: rgb(90,175,90); }")
 
+editButton = QPushButton("edit tasks")
+editButton.setStyleSheet("QPushButton { border-radius: 10px; max-height: 40px; " \
+                            "background-color: rgb(119,221,119); color: white; border: " \
+                            "none; padding: 5px 10px; } QPushButton:hover { background-color: rgb(105,198,105); } " \
+                            "QPushButton:pressed { background-color: rgb(90,175,90); }")
+
 loadButton = QPushButton("Load from file")
 loadButton.setStyleSheet("QPushButton { border-radius: 10px; max-height: 40px; " \
                             "background-color: rgb(119,221,119); color: white; border: " \
@@ -131,7 +137,7 @@ saveButton.setStyleSheet("QPushButton { border-radius: 10px; max-height: 40px; "
                             "none; padding: 5px 10px; } QPushButton:hover { background-color: rgb(105,198,105); } " \
                             "QPushButton:pressed { background-color: rgb(90,175,90); }")
 
-
+#sdorting function
 def sortTaskList():
     tasks = []
     for i in range(taskListWidget.count()):
@@ -145,8 +151,53 @@ def sortTaskList():
         taskListWidget.addItem(task)
 sortButton.clicked.connect(sortTaskList)
 
+#loading function
+def loadFromFile():
+    try:
+        with open("todolist.txt", "r") as file:
+            taskListWidget.clear()
+            for line in file:
+                taskListWidget.addItem(line.strip())
+        taskCount.setText(f"Tasks: {taskListWidget.count()}")
+    except FileNotFoundError:
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Icon.Warning)
+        msg.setText("No saved to-do list found!")
+        msg.setWindowTitle("Warning")
+        msg.exec()
+loadButton.clicked.connect(loadFromFile)
 
+#saving function
+def saveToFile():
+    with open("todolist.txt", "w") as file:
+        for i in range(taskListWidget.count()):
+            file.write(taskListWidget.item(i).text() + "\n")
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Icon.Information)
+    msg.setText("To-do list saved successfully!")
+    msg.setWindowTitle("Information")
+    msg.exec()
+saveButton.clicked.connect(saveToFile)
+
+#editing tasks
+def editTask():
+    selectedItem = taskListWidget.currentItem()
+    if selectedItem:
+        newTitle, ok = QInputDialog.getText(win, "Edit Task", "Modify task title:", QLineEdit.EchoMode.Normal, selectedItem.text().split(" - Priority: ")[0])
+        newPriority, ok2 = QInputDialog.getItem(win, "Edit Task Priority", "Select new priority:", [low, medium, high], 0, False)
+        if ok and ok2 and newTitle.strip():
+            selectedItem.setText(f"{newTitle.strip()} - Priority: {newPriority}")
+    else:
+        msg = QMessageBox()
+        msg.setIcon(QMessageBox.Icon.Warning)
+        msg.setText("No task selected to edit!")
+        msg.setWindowTitle("Warning")
+        msg.exec()
+editButton.clicked.connect(editTask)
+
+#bottom layout buttons 
 bottomLayout.addWidget(sortButton)
+bottomLayout.addWidget(editButton)
 bottomLayout.addWidget(loadButton)
 bottomLayout.addWidget(saveButton)
 
