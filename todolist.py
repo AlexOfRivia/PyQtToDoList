@@ -213,5 +213,3 @@ win.setLayout(mainlayout)
 #executing the app etc
 win.show()
 sys.exit(app.exec())
-
-
